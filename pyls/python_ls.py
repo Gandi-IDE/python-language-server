@@ -69,7 +69,7 @@ def start_tcp_lang_server(bind_addr, port, check_parent_process, handler_class):
          'SHUTDOWN_CALL': partial(shutdown_server, check_parent_process)}
     )
 
-    server = socketserver.TCPServer((bind_addr, port), wrapper_class, bind_and_activate=False)
+    server = socketserver.ThreadingTCPServer((bind_addr, port), wrapper_class, bind_and_activate=False)
     server.allow_reuse_address = True
 
     try:
