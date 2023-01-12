@@ -16,20 +16,27 @@ def pyls_definitions(config, document, position):
 
     return [
         {
-            'uri': uris.uri_with(document.uri, path=str(d.module_path)),
+            'uri': format_uri(document, d.module_path),
             'range': {
                 'start': {'line': d.line - 1, 'character': d.column},
                 'end': {'line': d.line - 1, 'character': d.column + len(d.name)},
             }
         }
-        for d in definitions if d.is_definition() and _not_internal_definition(d)
+        for d in definitions if d.is_definition() and _not_builtin_definition(d)
     ]
 
 
-def _not_internal_definition(definition):
+def format_uri(document, module_path):
+    if module_path is None:
+        return document.uri
+    else:
+        return uris.uri_with(document.uri, path=str(module_path))
+
+
+def _not_builtin_definition(definition):
+    # only supports definition in current document
     return (
         definition.line is not None and
         definition.column is not None and
-        definition.module_path is not None and
-        not definition.in_builtin_module()
+        definition.module_path is None
     )
